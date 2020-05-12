@@ -4,11 +4,14 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 public class Rejestrator {
 
+	public static Sprawdzator sprawdzator;
+	
 	private char[] literyAlfabetu = { 'a', '¹', 'b', 'c', 'æ', 'd', 'e', 'ê', 'f', 'g', 'h', 'i', 'j', 'k', 'l', '³',
 			'm', 'n', 'ñ', 'o', 'ó', 'p', 'r', 's', 'œ', 't', 'u', 'w', 'y', 'z', 'Ÿ', '¿' };
 	private char[] literyPol = { 'b', 'c', 'n', 'z', 'y', '2', '3' };
@@ -19,10 +22,10 @@ public class Rejestrator {
 	private BufferedImage[] pola = new BufferedImage[7];
 
 	protected String[][] plansza = new String[15][15];
-	protected String[] dok = new String[7];
-	protected int ileDok;
+	protected ArrayList<String> dok = new ArrayList<String>();
 	
 	public static void main(String[] args) throws Exception {
+		sprawdzator=new Sprawdzator();
 		new Rejestrator();
 	}
 	
@@ -47,33 +50,29 @@ public class Rejestrator {
 			BufferedImage pole = screenShot.getSubimage(1192 + (i * 37), 305, 37, 37);
 			identyfikujDok(pole, i);
 		}
-		//////////////CHWILOWO//////////////
-		dok[0]="ap";
-		dok[1]="ai";
-		dok[2]="ae";
-		dok[3]="as";
-		dok[4]="aa";
-		//////////////^^^^^^^^//////////////
-		for (int i = 0; i < 7; i++) {
-			if(dok[i].compareTo("xx")!=0)
-				ileDok++;
-			System.out.print(dok[i] + " ");
-		}
-
-		
-		//////////////CHWILOWO//////////////
+		//////////////TEST//////////////
+		if(dok.size()==0) {
+			dok.add("ap");
+			dok.add("ai");
+			dok.add("ae");
+			dok.add("as");
+			dok.add("aa");
+			dok.add("a¿");
+			dok.add("ar");
 		for (int i = 0; i < 15; i++)
 			for (int j = 0; j < 15; j++)
 				plansza[i][j]="pb";
 		plansza[7][7]="ad";
-		plansza[0][0]="ad";
-		plansza[14][14]="ad";
-		plansza[14][13]="ad";
-		System.out.println(ileDok);
-		//////////////^^^^^^^^//////////////
+		plansza[0][0]="as";
+		plansza[14][14]="at";
+		plansza[14][13]="ay";
+		plansza[8][4]="ak";
+		plansza[8][4]="ao";
+		plansza[8][4]="at";
+		}
+		//////////////TEST//////////////
 		
-		
-		new Generator(this);
+		new Generator( plansza, dok);
 	}
 
 	private void inicjuj() throws Exception {
@@ -124,14 +123,12 @@ public class Rejestrator {
 	private void identyfikujDok(BufferedImage pole, int i) {
 		for (int k = 0; k < 32; k++) {
 			if (porownaj(pole, alfabetDoku[k])) {
-				dok[i] = "d" + literyAlfabetu[k];
+				dok.add("d" + literyAlfabetu[k]);
 				return;
-			} else {
-				dok[i] = "xx";
 			}
 		}
 		if (porownaj(pole, alfabetDoku[32])) {
-			dok[i] = "b0";
+			dok.add("d0");
 			return;
 		}
 
