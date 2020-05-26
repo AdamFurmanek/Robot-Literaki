@@ -8,26 +8,21 @@ import java.util.ArrayList;
 
 public class Generator {
 
-	protected String[][] plansza = new String[15][15];
-	protected ArrayList<String> dok = new ArrayList<String>();
-	
+	public String[][] plansza = new String[15][15];
+	public ArrayList<String> dok = new ArrayList<String>();
 	private int[][] uklad = new int[15][15];
-	private String literyDok = new String("");
 	
-	protected Generator(String[][] plansza, ArrayList<String> dok)throws Exception {
+	protected Generator(String[][] plansza, ArrayList<String> dok)throws Exception{
 		this.plansza=plansza.clone();
 		this.dok=(ArrayList<String>) dok.clone();
+	}
+	
+	public void generuj() throws Exception{
 		
-		for(int i=0;i<dok.size();i++)
-			literyDok+=dok.get(i).charAt(1);
-		
-		for(int i=0;i<15;i++) {
-			//lecimy po kolumnach/czy tam wierszach
-			for(int j=0;j<15;j++) {
-				//lecimy po tym drugim
-				for(int k=0;k<dok.size();k++) {
-					//zwiekszamy ilosc liter
-					int l1=0,l2=0;                 //l1 - trzyma liczbe liter do postawienie     l2 - trzyma miejsce w ktorym ma byc polozona
+		for(int i=0;i<15;i++) {						//wiersz
+			for(int j=0;j<15;j++) {					//kolumny
+				for(int k=0;k<dok.size();k++) {		//ile liter
+					int l1=0,l2=0;					//l1 - trzyma liczbe liter do postawienie     l2 - trzyma miejsce w ktorym ma byc polozona
 					for(int m=0;m<15;m++)
 						for(int n=0;n<15;n++)
 							uklad[m][n]=0;
@@ -47,23 +42,23 @@ public class Generator {
 						l2++;
 					}
 					
-					if(sprawdzPrzystawanie()) {
-
-					generujWyrazy(l1);
+					if(sprawdzPrzystawanie()&&l1>5) {
+						przeslij(l1);
 					}
 					
 					if(j+l2>=15)
 						break;
+					if(Rejestrator.stop==1) {
+						Rejestrator.stop=0;
+						return;
+					}
 				}
 			}
 		}
-		for(int i=0;i<15;i++) {
-			//lecimy po kolumnach/czy tam wierszach
-			for(int j=0;j<15;j++) {
-				//lecimy po tym drugim
-				for(int k=0;k<dok.size();k++) {
-					//zwiekszamy ilosc liter
-					int l1=0,l2=0;                 //l1 - trzyma liczbe liter do postawienie     l2 - trzyma miejsce w ktorym ma byc polozona
+		for(int i=0;i<15;i++) {						//kolumny
+			for(int j=0;j<15;j++) {					//wiersz
+				for(int k=0;k<dok.size();k++) {		//ile liter
+					int l1=0,l2=0;					//l1 - trzyma liczbe liter do postawienia     l2 - trzyma miejsce w ktorym ma byc polozona
 					for(int m=0;m<15;m++)
 						for(int n=0;n<15;n++)
 							uklad[m][n]=0;
@@ -83,27 +78,43 @@ public class Generator {
 						l2++;
 					}
 					
-					if(sprawdzPrzystawanie()) {
-
-					generujWyrazy(l1);
+					if(sprawdzPrzystawanie()&&l1>5) {
+						przeslij(l1);
 					}
 					
 					if(j+l2>=15)
 						break;
+					if(Rejestrator.stop==1) {
+						Rejestrator.stop=0;
+						return;
+					}
 				}
 			}
 		}
 	}
 	
-	private void generujWyrazy(int ileLiter) throws Exception{
-    	Permutator p = new Permutator(plansza,dok);
-    	
-        p.permutation(literyDok,ileLiter, uklad);
+	private void przeslij(int l1) throws Exception {
+		String[][] nowaPlansza = new String[15][15];
+		for(int p=0;p<Rejestrator.wariator.twory.get(l1-1).size();p++) {
+		int k=0;
+	        for(int i=0;i<15;i++) {
+	        	for(int j=0;j<15;j++) {
+	        		if (uklad[i][j]==1) {
+	        			nowaPlansza[i][j]="a"+Rejestrator.wariator.twory.get(l1-1).get(p)[k];
+	        			k++;
+	        		}
+	        		else
+	        			nowaPlansza[i][j]=plansza[i][j];
+	        	}
+	        }
 
+        Rejestrator.sprawdzator.sprawdz(nowaPlansza,uklad);
+		}
 	}
 	
 	private boolean sprawdzPrzystawanie() {
-		for(int i=0;i<15;i++)
+		
+		for(int i=0;i<15;i++) {
 			for(int j=0;j<15;j++) {
 				if(uklad[i][j]==1) {
 					if(i>=1)
@@ -120,7 +131,12 @@ public class Generator {
 							return true;
 				}
 			}
+		}
 		return false;
+	}
+	
+	public void dispose() throws Throwable{
+		this.finalize();
 	}
 	
 }

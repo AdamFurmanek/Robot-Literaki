@@ -6,11 +6,11 @@ import java.util.ArrayList;
 
 public class Sprawdzator {
 
-	protected String[][] plansza = new String[15][15];
-	protected ArrayList<String> dok = new ArrayList<String>();
+	public String[][] plansza = new String[15][15];
+	public ArrayList<String> dok = new ArrayList<String>();
 	Trie trie;
-
-	private int[][] uklad = new int[15][15];
+	static public int dobrych=0;
+	static public int jakichkolwiek=0;
 	
 	public Sprawdzator() throws Exception{
 		trie = new Trie();
@@ -23,38 +23,38 @@ public class Sprawdzator {
 		
 	}
 	
-	public void sprawdz(String[][] plansza, ArrayList<String> dok, String[][] nowaPlansza, int[][] uklad) throws Exception {
+	public void sprawdz(String[][] nowaPlansza, int[][] uklad) throws Exception{
+		jakichkolwiek++;
 		int ileOK=0, wymaganeOK=0;
-		this.plansza=plansza.clone();
-		this.dok=(ArrayList<String>) dok.clone();
-		this.uklad=uklad.clone();
-		//this.nowaPlansza=nowaPlansza.clone();
 		for(int i=0;i<15;i++) {
 			for(int j=0;j<15;j++) {
 				if(uklad[i][j]==1) {
 					wymaganeOK++;
 					if(sprawdzKomorke(i,j,nowaPlansza)) {
 						ileOK++;
-
 					}
 				}
+				if(wymaganeOK!=ileOK)
+					break;
 			}
+			if(wymaganeOK!=ileOK)
+				break;
 		}
 		if(ileOK==wymaganeOK) {
+			dobrych++;
+			System.out.println(jakichkolwiek);
+			System.out.println(dobrych);
 			for (int x = 0; x < 15; x++) {
 				for (int y = 0; y < 15; y++) {
-					if(nowaPlansza[x][y].charAt(1)!='b')
+					if(nowaPlansza[x][y].charAt(0)=='a')
 						System.out.print(nowaPlansza[x][y].charAt(1)+" ");
 					else
-						System.out.print("  ");
-					//tutaj trzeba poprwic zeby wyswietlalo kiedy wszystkie litery ukladu sie zgadzaja
+						System.out.print(". ");
 				}
 				System.out.println();
 			}
 			System.out.println("\n");
 		}
-		
-		
 	}
 	
 private boolean sprawdzKomorke(int i, int j, String[][] nowaPlansza) throws Exception {
@@ -96,11 +96,9 @@ private boolean sprawdzKomorke(int i, int j, String[][] nowaPlansza) throws Exce
 		if(string.length()==1)
 			return true;
 		
-			if(trie.search(string)) {
-				return true;
-			}
-
+		if(trie.search(string)) {
+			return true;
+		}
 		return false;
-		
 	}
 }
